@@ -173,6 +173,18 @@ CRITICAL REQUIREMENTS FOR GPT-4o:
   - Include mutation-testing-friendly assertions (detect arithmetic, conditional, boundary mutations)
   - Use proper assertions: assertTrue, assertEquals, assertThrows, assertNotNull, assertNull
   - Verify assertions match the ACTUAL return values from the method
+  - Cover ALL branches in conditional statements (if/else, ternary operators)
+  - Test ALL return paths and code paths in the method
+  - For methods with multiple conditions, test each combination
+✓ COVERAGE REQUIREMENTS (CRITICAL):
+  - Aim for 95%+ line coverage - test EVERY line of code
+  - Aim for 90%+ branch coverage - test EVERY if/else branch, every conditional path
+  - Test ALL methods in the class, including private methods if accessible
+  - Test ALL constructors with different parameter combinations
+  - Test ALL getters, setters, and utility methods
+  - For domain classes: test equals(), hashCode(), toString() methods
+  - For collections: test empty, single item, multiple items, null handling
+  - For validation methods: test valid inputs, invalid inputs, null, empty, edge values
 ✓ Follow Java best practices: proper naming, clear test descriptions, organized structure
 ✓ Ensure all code compiles without errors
 ✓ Use correct types: Long not int, BigDecimal not double where appropriate
@@ -182,7 +194,8 @@ QUALITY STANDARDS:
 - Include meaningful test data
 - Use descriptive variable names
 - Add comments for complex test scenarios
-- Ensure high code coverage and mutation score potential
+- Ensure high code coverage (95%+ line, 90%+ branch) and mutation score potential
+- Generate enough test methods to cover ALL code paths
 
 Generate the complete, production-ready test class now:"""
         else:
