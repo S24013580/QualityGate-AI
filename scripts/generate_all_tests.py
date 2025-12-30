@@ -28,7 +28,7 @@ except ImportError as e:
 
 
 def find_java_classes(research_project_path: Path) -> list:
-    """Find all Java classes in the main source directory"""
+    """Find all Java classes in the main source directory, excluding domain and config, including controllers"""
     main_java = research_project_path / "src" / "main" / "java"
     
     if not main_java.exists():
@@ -40,6 +40,13 @@ def find_java_classes(research_project_path: Path) -> list:
         # Skip test files
         if "test" in str(java_file).lower():
             continue
+        # Skip domain classes
+        if "domain" in str(java_file):
+            continue
+        # Skip config classes
+        if "config" in str(java_file):
+            continue
+        # Include service and controller classes
         java_files.append(java_file)
     
     return sorted(java_files)
