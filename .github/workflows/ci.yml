@@ -44,6 +44,14 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
+    - name: Checkout Research Project
+      uses: actions/checkout@v4
+      with:
+        repository: ${{ github.repository_owner }}/QualityGate-AI-Research
+        path: research-project
+        token: ${{ secrets.GITHUB_TOKEN }}
+      continue-on-error: true
+    
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
@@ -66,3 +74,24 @@ jobs:
         OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       run: |
         python -m src.cli check
+    
+    - name: Generate tests for all Java classes
+      env:
+        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        RESEARCH_PROJECT_PATH: research-project
+      run: |
+        if [ -d "research-project" ]; then
+          python scripts/generate_all_tests.py research-project config/config.yaml
+        else
+          echo "Research project not available, skipping test generation"
+          exit 0
+        fi
+      continue-on-error: true
+    
+    - name: Upload generated tests
+      uses: actions/upload-artifact@v4
+      with:
+        name: generated-java-tests
+        path: research-project/src/test/java/
+        retention-days: 30
+      if: always()
