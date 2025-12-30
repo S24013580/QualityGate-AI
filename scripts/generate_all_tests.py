@@ -6,6 +6,7 @@ This is used in CI/CD pipeline to automatically generate tests.
 
 import sys
 import os
+import re
 from pathlib import Path
 
 # Add project root to path so we can import src modules
@@ -107,6 +108,21 @@ def generate_tests_for_all_classes(research_project_path: str, config_path: str 
                 output_dir=str(output_dir),
                 protocol="expert"
             )
+            
+            # Verify the generated file has correct filename matching class name
+            test_path = Path(test_file)
+            if test_path.exists():
+                test_content = test_path.read_text()
+                class_match = re.search(r'public\s+class\s+(\w+)', test_content)
+                if class_match:
+                    expected_class_name = class_match.group(1)
+                    expected_filename = f"{expected_class_name}.java"
+                    if test_path.name != expected_filename:
+                        # Rename file to match class name
+                        correct_path = test_path.parent / expected_filename
+                        test_path.rename(correct_path)
+                        test_file = str(correct_path)
+                        print(f"  ⚠️  Renamed file to match class name: {expected_filename}")
             
             print(f"✓ Successfully generated: {test_file}")
             success_count += 1

@@ -35,12 +35,31 @@ class JavaTestGenerator:
         
         test_code = self._extract_java_code(generated_code)
         test_code = self._clean_test_code(test_code, source_path)
-        class_name = self._extract_class_name(code)
-        test_filename = f"{class_name}Test.java"
+        
+        # Extract test class name from generated code (not source code)
+        test_class_name = self._extract_class_name(test_code)
+        if not test_class_name or test_class_name == "Unknown":
+            # Fallback to source class name
+            source_class_name = self._extract_class_name(code)
+            test_class_name = f"{source_class_name}Test"
+        
+        # Ensure filename matches the actual test class name
+        test_filename = f"{test_class_name}.java"
         
         output_path = Path(output_dir)
         output_path.mkdir(parents=True, exist_ok=True)
         test_path = output_path / test_filename
+        
+        # Verify the class name in the code matches the filename
+        if test_class_name not in test_code:
+            # Try to find the actual public class name in the test code
+            actual_class_match = re.search(r'public\s+class\s+(\w+)', test_code)
+            if actual_class_match:
+                actual_class_name = actual_class_match.group(1)
+                if actual_class_name != test_class_name:
+                    test_filename = f"{actual_class_name}.java"
+                    test_path = output_path / test_filename
+                    print(f"⚠️  Class name mismatch detected. Using filename: {test_filename}")
         
         package = self._extract_package(code)
         if f'package {package};' not in test_code:
@@ -55,6 +74,19 @@ class JavaTestGenerator:
 
 '''
             test_code = header + test_code
+        
+        # Final verification: ensure the class name in code matches filename
+        final_class_match = re.search(r'public\s+class\s+(\w+)', test_code)
+        if final_class_match:
+            final_class_name = final_class_match.group(1)
+            if final_class_name != test_class_name and test_path.name != f"{final_class_name}.java":
+                # Rename file to match class name
+                correct_filename = f"{final_class_name}.java"
+                correct_path = output_path / correct_filename
+                if test_path.exists() and test_path != correct_path:
+                    test_path.unlink()  # Remove incorrectly named file
+                test_path = correct_path
+                print(f"✓ Corrected filename to match class: {correct_filename}")
         
         test_path.write_text(test_code, encoding='utf-8')
         print(f"✓ Tests generated: {test_path}")
