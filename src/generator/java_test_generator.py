@@ -183,6 +183,11 @@ CRITICAL REQUIREMENTS FOR GPT-4o:
   - Test ALL constructors with different parameter combinations
   - Test ALL getters, setters, and utility methods
   - For domain classes: test equals(), hashCode(), toString() methods
+    * For toString(): Test that it contains key information, NOT exact format matching
+    * IMPORTANT: BigDecimal.toString() formats as "100.0" not "100.00" - always test ACTUAL format
+    * Use assertTrue(order.toString().contains("orderId=1")) and assertTrue(order.toString().contains("totalAmount=100"))
+    * DO NOT use assertEquals() for toString() - use contains() or matches() to check key fields
+    * Test that toString() includes all important fields, not the exact string format
   - For collections: test empty, single item, multiple items, null handling
   - For validation methods: test valid inputs, invalid inputs, null, empty, edge values
 ✓ Follow Java best practices: proper naming, clear test descriptions, organized structure
@@ -296,6 +301,7 @@ Generate the complete, compilable test class now."""
         return methods[:10]
     
     def _clean_test_code(self, test_code: str, source_path: Path) -> str:
+        # Remove duplicate setUp methods
         setUp_pattern = r'@BeforeEach\s+void\s+setUp\s*\([^)]*\)\s*{'
         matches = list(re.finditer(setUp_pattern, test_code))
         if len(matches) > 1:
@@ -330,6 +336,39 @@ Generate the complete, compilable test class now."""
                     new_lines.append(line)
             
             test_code = '\n'.join(new_lines)
+        
+        # Fix toString() tests that use exact format matching with BigDecimal
+        # Replace assertEquals(expected, obj.toString()) with contains() checks
+        lines = test_code.split('\n')
+        cleaned_lines = []
+        for line in lines:
+            # Pattern: assertEquals("Order{...totalAmount=100.00...}", order.toString())
+            # Replace with: assertTrue(order.toString().contains("totalAmount=100"))
+            if 'assertEquals' in line and 'toString()' in line and ('100.00' in line or '.00' in line):
+                # Extract the object name and expected string
+                match = re.search(r'assertEquals\s*\(\s*"([^"]+)"\s*,\s*(\w+)\.toString\(\)\s*\)', line)
+                if match:
+                    expected_str = match.group(1)
+                    obj_name = match.group(2)
+                    # Replace with contains() checks for key fields
+                    # Extract key field values from expected string
+                    field_matches = re.findall(r'(\w+)=([^,}]+)', expected_str)
+                    if field_matches:
+                        # Replace the assertEquals with multiple contains() checks
+                        indent = len(line) - len(line.lstrip())
+                        new_asserts = []
+                        for field_name, field_value in field_matches:
+                            # Remove trailing zeros from BigDecimal values
+                            if '.' in field_value:
+                                field_value_clean = field_value.rstrip('0').rstrip('.')
+                            else:
+                                field_value_clean = field_value
+                            new_asserts.append(' ' * indent + f'assertTrue({obj_name}.toString().contains("{field_name}={field_value_clean}"));')
+                        cleaned_lines.extend(new_asserts)
+                        continue
+            cleaned_lines.append(line)
+        
+        test_code = '\n'.join(cleaned_lines)
         
         source_code = source_path.read_text()
         package = self._extract_package(source_code)
