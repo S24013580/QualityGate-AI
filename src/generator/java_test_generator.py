@@ -156,6 +156,16 @@ REQUIREMENTS - Generate the COMPLETE test class:
 
 {domain_api_info}
 
+BRANCH COVERAGE EXAMPLES (CRITICAL - must test ALL branches):
+- For if (condition): test BOTH when condition is true AND when false
+- For if-else: test BOTH branches
+- For if without else: test true path AND the implicit false path (code continues after if)
+- For nested conditions: test all 4 combinations (true-true, true-false, false-true, false-false)
+- For validation: test valid (passes all checks) AND each invalid case (fails at each check)
+- For loops: test empty collection, single item, multiple items
+- For null checks: test null case AND non-null case
+- For comparisons (>, <, >=, <=, ==): test equal, less than, greater than, boundary values
+
 CRITICAL REQUIREMENTS FOR GPT-4o:
 ✓ Generate the COMPLETE test class in one response (package, all imports, class, field, setUp, ALL test methods)
 ✓ Use ONLY the constructors and methods listed in ACTUAL API above - do NOT invent methods
@@ -174,8 +184,14 @@ CRITICAL REQUIREMENTS FOR GPT-4o:
   - Use proper assertions: assertTrue, assertEquals, assertThrows, assertNotNull, assertNull
   - Verify assertions match the ACTUAL return values from the method
   - Cover ALL branches in conditional statements (if/else, ternary operators)
+    * For if-else: test BOTH true and false branches
+    * For if without else: test true path AND the implicit false path (code after if)
+    * For nested ifs: test all combinations (true-true, true-false, false-true, false-false)
+    * For ternary operators: test both true and false conditions
+    * For switch statements: test all cases including default
   - Test ALL return paths and code paths in the method
   - For methods with multiple conditions, test each combination
+  - For validation methods: test valid (true branch) AND invalid (false branch) for EACH condition
 ✓ COVERAGE REQUIREMENTS (CRITICAL):
   - Aim for 95%+ line coverage - test EVERY line of code
   - Aim for 90%+ branch coverage - test EVERY if/else branch, every conditional path
