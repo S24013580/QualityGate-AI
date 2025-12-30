@@ -161,12 +161,18 @@ CRITICAL REQUIREMENTS FOR GPT-4o:
 ✓ Use ONLY the constructors and methods listed in ACTUAL API above - do NOT invent methods
 ✓ Use fully qualified class names: com.qualitygate.research.domain.Order (NOT just Order - conflicts with JUnit)
 ✓ Generate EXACTLY ONE @BeforeEach setUp() method - no duplicates
+✓ IMPORTANT: Test the ACTUAL behavior of the method, not what you think it should do
+  - Read the source code logic carefully
+  - Test what the method ACTUALLY returns, not what you expect it to return
+  - If a method returns true for "test@.com", test that it returns true (don't assume it should return false)
+  - Match your test expectations to the actual implementation logic
 ✓ Each test method must:
-  - Test normal/happy path scenarios
-  - Test edge cases and boundary conditions
+  - Test normal/happy path scenarios based on ACTUAL method behavior
+  - Test edge cases and boundary conditions based on ACTUAL method logic
   - Test exception cases with assertThrows
   - Include mutation-testing-friendly assertions (detect arithmetic, conditional, boundary mutations)
   - Use proper assertions: assertTrue, assertEquals, assertThrows, assertNotNull, assertNull
+  - Verify assertions match the ACTUAL return values from the method
 ✓ Follow Java best practices: proper naming, clear test descriptions, organized structure
 ✓ Ensure all code compiles without errors
 ✓ Use correct types: Long not int, BigDecimal not double where appropriate
