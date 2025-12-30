@@ -1,0 +1,48 @@
+java:
+  version: "11"
+  build_tool: "maven"
+  test_framework: "junit5"
+  mocking_library: "mockito"
+  source_path: "src/main/java"
+  test_path: "src/test/java"
+  maven_home: null
+
+llm:
+  provider: "openai"
+  model: "gpt-4o"
+  temperature: 0.1
+  max_tokens: 4000
+  timeout: 180
+  api_key: null
+
+prompts:
+  protocol: "expert"
+
+mutation:
+  tool: "pit"
+  operators:
+    - "arithmetic"
+    - "comparison"
+    - "logical"
+    - "conditional"
+    - "increments"
+    - "negate_conditionals"
+  threshold: 0.85
+  pit_version: "1.15.0"
+
+coverage:
+  tool: "jacoco"
+  minimum_line_coverage: 0.95
+  minimum_branch_coverage: 0.90
+  minimum_instruction_coverage: 0.90
+
+evaluation:
+  output_dir: "reports"
+  generate_html: true
+  include_timing: true
+  compare_with_manual: false
+
+paths:
+  reports: "reports"
+  target: "target"
+
