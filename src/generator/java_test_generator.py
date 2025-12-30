@@ -156,6 +156,22 @@ REQUIREMENTS - Generate the COMPLETE test class:
 
 {domain_api_info}
 
+TESTING METHODOLOGY (CRITICAL - follow this process for EVERY test):
+1. Read the source code method CAREFULLY - understand every line, every condition
+2. Trace through the logic with your test data - what does it ACTUALLY return?
+   - Step through each if/else condition
+   - Calculate what the actual result will be
+   - Don't assume - compute it!
+3. Write assertions that match the ACTUAL return value, not what you think it should be
+4. For validation methods: test what the code ACTUALLY validates, not what you think it should validate
+5. For calculations: test the ACTUAL calculation result, not what you think it should be
+6. For null handling: test what the code ACTUALLY does with null, not what you think it should do
+7. For boolean methods: test what the code ACTUALLY returns (true/false), not what you think it should return
+
+EXAMPLE: If isValidEmail("test@.com") returns true (because it only checks for "@" and "."), 
+         then test: assertTrue(userService.isValidEmail("test@.com"))
+         DO NOT test: assertFalse(userService.isValidEmail("test@.com")) - that's wrong!
+
 BRANCH COVERAGE EXAMPLES (CRITICAL - must test ALL branches):
 - For if (condition): test BOTH when condition is true AND when false
 - For if-else: test BOTH branches
@@ -171,11 +187,15 @@ CRITICAL REQUIREMENTS FOR GPT-4o:
 ✓ Use ONLY the constructors and methods listed in ACTUAL API above - do NOT invent methods
 ✓ Use fully qualified class names: com.qualitygate.research.domain.Order (NOT just Order - conflicts with JUnit)
 ✓ Generate EXACTLY ONE @BeforeEach setUp() method - no duplicates
-✓ IMPORTANT: Test the ACTUAL behavior of the method, not what you think it should do
-  - Read the source code logic carefully
+✓ CRITICAL: Test the ACTUAL behavior of the method, not what you think it should do
+  - Read the source code logic CAREFULLY - line by line
   - Test what the method ACTUALLY returns, not what you expect it to return
   - If a method returns true for "test@.com", test that it returns true (don't assume it should return false)
-  - Match your test expectations to the actual implementation logic
+  - If a method returns true for null input, test that it returns true (don't assume it should return false)
+  - If a calculation returns 40.00, test that it equals 40.00 (don't assume it should be 30.00)
+  - Match your test expectations EXACTLY to the actual implementation logic
+  - Before writing assertions, mentally trace through the code with your test data to see what it ACTUALLY returns
+  - DO NOT make assumptions about what the method "should" do - only test what it DOES do
 ✓ Each test method must:
   - Test normal/happy path scenarios based on ACTUAL method behavior
   - Test edge cases and boundary conditions based on ACTUAL method logic
