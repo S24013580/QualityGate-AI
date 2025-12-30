@@ -8,11 +8,22 @@ import sys
 import os
 from pathlib import Path
 
-# Add src to path
-sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
+# Add project root to path so we can import src modules
+project_root = Path(__file__).parent.parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
 
-from llm.factory import load_config, create_llm_client
-from generator.java_test_generator import JavaTestGenerator
+# Import using absolute imports from src
+try:
+    from src.llm.factory import load_config, create_llm_client
+    from src.generator.java_test_generator import JavaTestGenerator
+except ImportError as e:
+    # Fallback: try adding src to path
+    src_path = project_root / "src"
+    if str(src_path) not in sys.path:
+        sys.path.insert(0, str(src_path))
+    from llm.factory import load_config, create_llm_client
+    from generator.java_test_generator import JavaTestGenerator
 
 
 def find_java_classes(research_project_path: Path) -> list:
